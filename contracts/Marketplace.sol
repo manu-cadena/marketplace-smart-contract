@@ -34,4 +34,40 @@ contract Marketplace {
     mapping(uint256 => Order) public orders;        // orderId → Order details
     mapping(address => uint256[]) public userItems; // user → array of their item IDs
     mapping(address => bool) public admins;         // address → is admin?
+
+    // Constructor - Set the deployer as an admin
+    constructor() {
+    admins[msg.sender] = true;
+    }
+
+    modifier onlyAdmin() {
+    require(admins[msg.sender], "Not an admin");
+    _;
+    }
+
+    // Events
+    event ItemListed(uint256 indexed itemId, address indexed seller);
+    event AdminAdded(address indexed newAdmin);
+
+    // Function to list an item for sale
+    function listItem(string memory _name, string calldata _description, uint256 _price) external {
+        require(_price > 0, "Price must be greater than zero");
+        
+        itemCounter++;
+        items[itemCounter] = Item({
+            name: _name,
+            description: _description,
+            price: _price,
+            seller: msg.sender,
+            status: ItemStatus.Available,
+            createdAt: block.timestamp
+        });
+        userItems[msg.sender].push(itemCounter);
+        emit ItemListed(itemCounter, msg.sender);
+    }
+
+    function addAdmin(address _newAdmin) external onlyAdmin {
+        admins[_newAdmin] = true;
+        emit AdminAdded(_newAdmin);
+    }
 }
