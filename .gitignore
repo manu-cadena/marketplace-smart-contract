@@ -1,9 +1,11 @@
-node_modules/
-.env
+
+# Foundry/Forge
+out/
+lib/
 cache/
+broadcast/
 artifacts/
 coverage/
 .DS_Store
 *.log
-dist/
-build/
+.env
